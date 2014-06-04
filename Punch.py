@@ -65,6 +65,7 @@ class DateFormatError(IOError):
 class Punch(object):
 
     timestampFormat = '%Y%m%dT%H%M%S'
+    customTimeFormat = '%H:%M'
     
     def __init__(self, optlist, args):
         self.optlist = optlist
@@ -241,7 +242,7 @@ class Punch(object):
                       
     def get_time(self):
         return time.strftime( self.timestampFormat, time.localtime())
-          
+    
     def translate_time_to_secs(self,timestamp):
         return time.strptime( timestamp[0:15], self.timestampFormat )
     
@@ -307,6 +308,45 @@ class Punch(object):
         self.punchFile.write(rec)
         self.close_punch_file()
         print "Start timer on: " + line
+
+    def get_converted_time(self, custom_time_str):
+        """
+        parse the custom time and then format it into timestampFormat
+        """
+        try:
+            custom_time = time.strptime(custom_time_str, self.customTimeFormat)
+        except:
+            raise DateFormatError
+
+        local_time = time.localtime()
+        local_time.tm_hour = custom_time.tm_hour
+        local_time.tm_min = custom_time.tm_min
+        converted_time = local_time
+
+        return time.strftime(self.timestampFormat, converted_time)
+
+    def add_in_line_custom(self,line_num, converted_time):
+        """
+        Add a new line to punch.csv containing task,start-custome_time<eol>
+        where task is line 'line_num' from self.taskFile
+        amd custom_time in format %H:%M (hours in military format) 
+        ex. 13:00
+        """
+        
+        # If previous output line wasn't closed by issuing an 'out' command, then
+        # do so now.
+        if self.last_punch_line_complete() == False:
+            self.add_out_line()
+        
+        lines = self.taskFile.readlines()
+        if( line_num > len(lines)):
+            raise TaskNotFoundError
+        line = lines[line_num-1].strip()
+        rec = '%s\t%s' % (line, converted_time)
+        self.open_punch_file()
+        self.punchFile.write(rec)
+        self.close_punch_file()
+        print "Start timer on: " + line
         
     def add_out_line(self):
         """
@@ -321,6 +361,26 @@ class Punch(object):
             raise NoOpenTaskError
               
         rec = '\t%s\n' % self.get_time()
+        
+        self.open_punch_file()
+        self.punchFile.write(rec)
+        self.close_punch_file()
+        
+        print "Stop timer on: " + lastrec[0]  
+
+    def add_out_line_custom(self, custom_time_str):
+        """
+        Add the 'out' timestamp to the last line of the file
+        and append the EOL.
+        """
+        
+        # If last output line was already closed by issuing an 'out' command, then
+        # raise an exception.
+        lastrec = self.get_last_punch_rec()
+        if self.punch_rec_complete(lastrec):
+            raise NoOpenTaskError
+              
+        rec = '\t%s\n' % self.self.get_converted_time(custom_time_str)
         
         self.open_punch_file()
         self.punchFile.write(rec)
@@ -361,7 +421,10 @@ class Punch(object):
                     raise PunchCommandError
                 
         """
-        If three arguments are passed, then the last argument must be a task file (eg. projects.txt)
+        If three arguments are passed, then there are two possibilities:
+        (1) a time was passed in specifying a custom time to use for the timestamp (punch in 7) 
+        (2) a name was passed in specifying a task file (eg. projects.txt)
+
         """
         if( len(self.args) == 3):
             # Check to see if the argument is number.
@@ -370,20 +433,44 @@ class Punch(object):
             except:
                 line_num = -1
             
-            if( line_num > -1 ):
-                self.open_file(self.args[2])
-                self.add_in_line(line_num)
-                self.close_task_file()
+            if( line_num > -1 ):                
+
+                given_custom_time = True    
+                try:
+                    # raises DateFormatError if it's not date
+                    converted_time = self.get_converted_time(args[2])
+                except DateFormatError:
+                    given_custom_time = False
+
+
+                if given_custom_time:
+                    self.open_todo()
+                    self.add_in_line_custom(line_num, converted_time)
+                    self.close_task_file()
+                else:
+                    self.open_file(self.args[2])
+                    self.add_in_line(line_num)
+                    self.close_task_file()
+                    
             else:
                 raise PunchCommandError
         
     def execute_out(self):
-        """The logic for the 'out' command."""
+        """
+        The logic for the 'out' command. 
+        If two arguments are passed, then use second argument as a custom time for the punch out
+
+        """
         self.parse_config()
         if( len(self.args) == 1 ):
             self.add_out_line()
         else:
             raise PunchCommandError       
+
+        if( len(self.args) == 2 ):
+            self.add_out_line_custom(args[1])
+        else:
+            raise PunchCommandError
 
     def execute_wh(self):
         """The logic for the 'what' command."""
@@ -529,17 +616,19 @@ if __name__ == '__main__':
     try:
         usage = \
 """
-Punch.py [-h] command [line-number] [filename] [archive-date]
+Punch.py [-h] command [line-number] ( [filename] / [custom time] ) [archive-date]
         
   Commands:
-  'in' : start the timer for a todo task [line-number]
-  'out' : stop the timer for the current task
+  'in' : start the timer for a todo task [line-number] optionally at custom time
+  'out' : stop the timer for the current task optionally at custom time
   'what' : print the current 'active' task. shortcut is 'wh'
   'report' : print a report. shortcut is 'rep'
   'archive' : archive all time records previous to [archive-date] inclusive
-        
+  
+  Custom Time Format: %s ex. 13:30
+
   line-number is the number of the item in the todo.txt file (or filename)
-"""
+""" % self.customTimeFormat
         
         version = \
 """
