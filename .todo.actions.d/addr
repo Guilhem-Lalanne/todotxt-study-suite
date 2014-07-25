@@ -9,7 +9,7 @@ shift
   curcmd=`basename $0`
   echo "    $curcmd \"THING I NEED TO DO +project @context\""
   echo "      Append the tags of the most recently added item"
-  echo "      to this item. If tags are different, resets."
+  echo "      to this item."
   echo ""
   exit
 }

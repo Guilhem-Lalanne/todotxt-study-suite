@@ -14,6 +14,19 @@ A helpful todo.sh command when you are adding lots of related tasks. It simply a
 ex. `./todo.sh add 'SOMETHING @context +project'`
 ex. `./todo.sh addr 'SOMETHING ELSE'`
 
+<pre>
+$ t add 'here is a a task +context +project'
+59 here is a a task +context +project
+TODO: 59 added.
+
+$ t addr 'here is another task'
+Appending: +context +project
+60 here is another task
+TODO: 60 added.
+60 here is another task +context
+60 here is another task +context +project
+</pre>
+
 
 _lsgroup_: Prints in columns organized by either context or group
 =====
@@ -27,6 +40,27 @@ To print your todo.txt by project.
 
 ####lsgp
 ex. `./todo.sh lsgp`
+
+<pre>
+$ t lsgc
+@play                                              @code                                              
+(A) task                                           (B) task                                           
+(C) task                                           task                                               
+task                                               task +research                                     
+task                                               task +tool                                         
+task                                                                                                  
+task                                                                                                  
+                                                                                                      
+@email                                             @context                                           
+(A) this guy                                       (A) task +project                                  
+(A) this guy +project                              (D) task +project                                  
+this guy                                           task +project                                      
+this guy                                                                                              
+this guy                                                                                              
+this guy                                                                                              
+this guy                                                                                              
+this guy   
+</pre>
 
 
 _punch_: still a work in progress
