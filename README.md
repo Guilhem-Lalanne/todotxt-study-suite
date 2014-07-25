@@ -1,12 +1,35 @@
 contents
 ========
-- punch
-- daily
 - addr
 - lsgroup
+- punch
+- daily
 
 
-punch
+_addr_: add task with the projects and contexts of the last added task
+====
+
+A helpful todo.sh command when you are adding lots of related tasks. It simply appends the tags of the most recent item to the item you add.
+
+ex. `./todo.sh add 'SOMETHING @context +project'`
+ex. `./todo.sh addr 'SOMETHING ELSE'`
+
+
+_lsgroup_: Prints in columns organized by either context or group
+=====
+
+To print your todo.txt by context.
+
+####lsgc
+ex. `./todo.sh lsgc`
+
+To print your todo.txt by project.
+
+####lsgp
+ex. `./todo.sh lsgp`
+
+
+_punch_: still a work in progress
 =====
 
 Punch for Todo.txt
@@ -21,36 +44,15 @@ This is a fork of https://github.com/adewinter/punch, which is a project forked 
 
 Adding the feature to specify a custom time to punch in and out.
 
-ex. `punch in 31 8:23' where '31' is the line number of the task you wish to track and 8:23 is the time you started that task
-ex. 'punch out 14:05' where '14:05' is the time you ended that task
+ex. `punch in 31 8:23` where '31' is the line number of the task you wish to track and 8:23 is the time you started that task
+ex. `punch out 14:05` where '14:05' is the time you ended that task
 
 ####todo
 
 + currently the argument arfter the line number for 'punch in' is used to specify the file to get the todo from. need to figure out a way to keep this functionality
 
 
-daily
+_daily_: still a work in progress
 =====
 
 Daily is a python script to track your daily stats over time, such as the time you wake up, the time yo go to bed, the things you eat everyday. In the future, hopefully it will support graphing these stats over itme so you can see trends.
-
-
-addr
-====
-
-A helpful todo.sh command when you are adding lots of related tasks. It simply appends the tags of the most recent item to the item you add.
-
-ex. ./todo.sh add 'SOMETHING @context +project'
-ex. ./todo.sh addr 'SOMETHING ELSE'
-
-
-lsgroup: 
-=====
-
-Prints your todotxt in columns sepearted by either context or group
-
-####lsgc
-ex. ./todo.sh lsgc
-
-####lsgp
-ex. ./todo.sh lsgp
