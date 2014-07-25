@@ -49,5 +49,8 @@ lsgroup
 
 Prints your todotxt in columns sepearted by either context or group
 
+####lsgc
 ex. ./todo.sh lsgc
+
+####lsgp
 ex. ./todo.sh lsgp
