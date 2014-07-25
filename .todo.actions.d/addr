@@ -3,6 +3,7 @@
 action=$1
 shift
 
+
 [ "$action" = "usage" ] && {
   echo "  Add with the tags of most recent addition:"
   curcmd=`basename $0`
@@ -15,6 +16,16 @@ shift
 
 # get the last line added and extract context
 line=`sed -n '$ =' "$TODO_FILE"`
+# line="$(($line-1))" # subtract 1??
 REGEX='[@|+][A-Za-z0-9]*'
 
-echo "$line" | grep -o "$REGEX"
+
+echo "Appending:" $(sed $line"q;d" "$TODO_FILE" | grep -o "$REGEX")
+
+"$TODO_FULL_SH" command add "$1"
+newest=`sed -n '$ =' "$TODO_FILE"`
+
+sed $line"q;d" "$TODO_FILE" | grep -o "$REGEX" | while read -r app
+do 
+    "$TODO_FULL_SH" command append "$newest" "$app"
+done
