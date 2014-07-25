@@ -44,7 +44,7 @@ ex. ./todo.sh add 'SOMETHING @context +project'
 ex. ./todo.sh addr 'SOMETHING ELSE'
 
 
-lsgroup
+lsgroup: 
 =====
 
 Prints your todotxt in columns sepearted by either context or group
