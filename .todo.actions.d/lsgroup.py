@@ -30,7 +30,7 @@ def main(argv):
 
 		# append to end here and switch to front after sorting
 		for i in range(len(lines)):
-			lines[i] = lines[i].replace('\n', '') + ' ' + ('%02d' % i)
+			lines[i] = lines[i].replace('\n', '') + ' ' + ('%02d' % (i + 1))
 
 		for l in lines:
 			for r in re.findall('(' + pre + '[A-Za-z0-9]*)', l):
