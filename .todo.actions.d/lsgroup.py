@@ -10,7 +10,8 @@ class bcolors:
 
 HIGHLIGHTS = (('(A)', bcolors.WARNING),
 			  ('(B)', bcolors.OKBLUE),
-			  ('(C)', bcolors.OKGREEN))
+			  ('(C)', bcolors.OKGREEN),
+			  ('(D)', bcolors.HEADER))
 COLUMN_W = 40
 TERM_W = int(os.popen('stty size', 'r').read().split()[1])
 
@@ -27,6 +28,10 @@ def main(argv):
 	with open(argv[0], "r") as f:
 		lines = f.readlines()
 
+		# append to end here and switch to front after sorting
+		for i in range(len(lines)):
+			lines[i] = lines[i].replace('\n', '') + ' ' + ('%02d' % i)
+
 		for l in lines:
 			for r in re.findall('(' + pre + '[A-Za-z0-9]*)', l):
 				if r not in contexts:
@@ -37,6 +42,12 @@ def main(argv):
 		# sort lines
 		for i in range(len(context_lines)):
 			context_lines[i] = sorted(context_lines[i])
+
+		# move number from end
+		for i in range(len(context_lines)):
+			for j in range(len(context_lines[i])):
+				context_lines[i][j] = context_lines[i][j].split()[-1] \
+				+ ' ' + ' '.join(context_lines[i][j].split()[:-1])
 
 		# columns that will fit
 		column_offset = 0
