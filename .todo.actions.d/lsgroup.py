@@ -59,7 +59,7 @@ def main(argv):
 
 			# copy biggest over one
 			contexts.insert(biggest, contexts[biggest])
-
+			print 'split %s into 2 sections.' % contexts[biggest]
 
 	try:
 		# sort lines
