@@ -32,12 +32,35 @@ def main(argv):
 		for i in range(len(lines)):
 			lines[i] = lines[i].replace('\n', '') + ' ' + ('%02d' % (i + 1))
 
+		# rool through list and add projects into array if they're not there
 		for l in lines:
 			for r in re.findall('(' + pre + '[A-Za-z0-9]*)', l):
 				if r not in contexts:
 					contexts.append(r)
 					context_lines.append([])
 				context_lines[contexts.index(r)].append(l.strip())
+
+
+		
+		context_lengths = sorted([len(c) for c in context_lines])
+		
+		# balance the context list if context is 2x as big as next one
+		if context_lengths[-1] * 2 > context_lengths[-2]:
+			# find the index of biggest
+			# you don't need next here because you know that you're gonna get something
+			biggest = [i for i in range(len(context_lines)) 
+					if len(context_lines[i]) == context_lengths[-1]][0]
+
+			chunk1 = context_lines[biggest][:int(context_lengths[-1] / 2)]
+			chunk2 = context_lines[biggest][int(context_lengths[-1] / 2):]
+
+			context_lines[biggest] = chunk1
+			context_lines.insert(biggest, chunk2)
+
+			# copy biggest over one
+			contexts.insert(biggest, contexts[biggest])
+
+
 	try:
 		# sort lines
 		for i in range(len(context_lines)):
