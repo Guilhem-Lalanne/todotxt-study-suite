@@ -1,4 +1,4 @@
-import sys, os, re
+import sys, os, re, subprocess
 
 class bcolors:
     HEADER = '\033[95m'
@@ -25,41 +25,54 @@ def main(argv):
 	# contexts or projects
 	pre = '\+' if '-p' in argv else '@'
 
+
+		# this ignores final filter and stuff
+	"""
 	with open(argv[0], "r") as f:
 		lines = f.readlines()
-
 		# append to end here and switch to front after sorting
 		for i in range(len(lines)):
 			lines[i] = lines[i].replace('\n', '') + ' ' + ('%02d' % (i + 1))
+	"""
 
-		# rool through list and add projects into array if they're not there
-		for l in lines:
-			for r in re.findall('(' + pre + '[A-Za-z0-9]*)', l):
-				if r not in contexts:
-					contexts.append(r)
-					context_lines.append([])
-				context_lines[contexts.index(r)].append(l.strip())
+	# filter for only the actual lines
+	# get no colors because strings are weird
+	lines = [l for l in subprocess.check_output(['.scripts/todo.sh', '-p', 'ls']).split('\n') 
+			if len(re.findall('^\d+', l)) > 0]
+	
+	# numbers from start to end so you can sort later on
+	for i in range(len(lines)):
+		num = re.findall('^\d+', lines[i])[0]
+		lines[i] = re.sub('^\d+', '', lines[i])
+		lines[i] = lines[i] + ' ' + num
 
 
-		
-		context_lengths = sorted([len(c) for c in context_lines])
-		
-		# balance the context list if context is 2x as big as next one
-		if context_lengths[-1] * 2 > context_lengths[-2]:
-			# find the index of biggest
-			# you don't need next here because you know that you're gonna get something
-			biggest = [i for i in range(len(context_lines)) 
-					if len(context_lines[i]) == context_lengths[-1]][0]
+	# rool through list and add projects into array if they're not there
+	for l in lines:
+		for r in re.findall('(' + pre + '[A-Za-z0-9]*)', l):
+			if r not in contexts:
+				contexts.append(r)
+				context_lines.append([])
+			context_lines[contexts.index(r)].append(l.strip())
+	
+	context_lengths = sorted([len(c) for c in context_lines])
+	
+	# balance the context list if context is 2x as big as next one
+	if context_lengths[-1] * 2 > context_lengths[-2]:
+		# find the index of biggest
+		# you don't need next here because you know that you're gonna get something
+		biggest = [i for i in range(len(context_lines)) 
+				if len(context_lines[i]) == context_lengths[-1]][0]
 
-			chunk1 = context_lines[biggest][:int(context_lengths[-1] / 2)]
-			chunk2 = context_lines[biggest][int(context_lengths[-1] / 2):]
+		chunk1 = context_lines[biggest][:int(context_lengths[-1] / 2)]
+		chunk2 = context_lines[biggest][int(context_lengths[-1] / 2):]
 
-			context_lines[biggest] = chunk1
-			context_lines.insert(biggest, chunk2)
+		context_lines[biggest] = chunk1
+		context_lines.insert(biggest, chunk2)
 
-			# copy biggest over one
-			contexts.insert(biggest, contexts[biggest])
-			print 'split %s into 2 sections.' % contexts[biggest]
+		# copy biggest over one
+		contexts.insert(biggest, contexts[biggest])
+		print 'split %s into 2 sections.' % contexts[biggest]
 
 	try:
 		# sort lines
