@@ -14,6 +14,8 @@ HIGHLIGHTS = (('(A)', bcolors.WARNING),
 			  ('(D)', bcolors.HEADER))
 COLUMN_W = 40
 TERM_W = int(os.popen('stty size', 'r').read().split()[1])
+TODOSH_DIR = '/home/sachin/.scripts'
+
 
 def main(argv):
 	contexts = []
@@ -37,7 +39,7 @@ def main(argv):
 
 	# filter for only the actual lines
 	# get no colors because strings are weird
-	lines = [l for l in subprocess.check_output(['.scripts/todo.sh', '-p', 'ls']).split('\n') 
+	lines = [l for l in subprocess.check_output(['./todo.sh', '-p', 'ls'], cwd=TODOSH_DIR).split('\n') 
 			if len(re.findall('^\d+', l)) > 0]
 	
 	# numbers from start to end so you can sort later on
