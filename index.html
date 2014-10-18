@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+    <title></title>
+    <script src="https://www.dropbox.com/static/api/dropbox-datastores-1.0-latest.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="xac2gaynjb1rok8"></script>
+    <script src="/js/masonry.pkgd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <center id="topbar">
+        <button id="writeButton" class="dropbox-dropin-btn">
+            <span class="dropin-btn-status"></span>Update in Dropbox</button>
+    </center>
+
+    <div id="container">
+    </div>
+
+    <script>
+        // DROPBOX 
+        var client = new Dropbox.Client({ key: 'xac2gaynjb1rok8' });
+        var button = Dropbox.createChooseButton({
+            success : function(files) {
+                console.log(files[0].name);
+                console.log(files[0].bytes);
+                console.log(files[0].link);
+
+                $.ajax({
+                  url: files[0].link,
+                  success: function(data) {
+                    console.log(data);
+                  },
+                });
+            },
+
+            cancel  : function() {},
+
+            multiselect : false,
+            extensions  : ['.txt'],
+        });
+        document.getElementById("topbar").appendChild(button);
+
+        // actual function to upload to dropbox
+        function doHelloWorld() {
+            client.writeFile('hello.txt', 'Hello, World!', function (error) {
+                if (error) {
+                    alert('Error: ' + error);
+                } else {
+                    alert('File written successfully!');
+                }
+            });
+        }
+
+        // Try to complete OAuth flow. So you don't aways have to login for me
+        client.authenticate({ interactive: false }, function (error, client) {
+            if (error) {
+                alert('Error: ' + error);
+            }
+        });
+
+        if(client.isAuthenticated()) {
+            doHelloWorld();
+        } else {
+            console.log('Not Currently Connected');
+        }
+        document.getElementById('writeButton').onclick = function () {
+            client.authenticate(function (error, client) {
+                if (error) {
+                    alert('Error: ' + error);
+                } else {
+                    doHelloWorld();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
