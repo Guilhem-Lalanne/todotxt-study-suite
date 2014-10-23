@@ -2,6 +2,7 @@ contents
 ========
 - addr
 - lsgroup
+- lsp
 - punch
 - daily
 
@@ -61,6 +62,11 @@ this guy
 this guy                                                                                              
 this guy   
 </pre>
+
+_lsp_: Prints out all your top priorit tasks from (A)...(E) 
+=====
+
+Ok, this is actually really just an alias for ls that passes "'(A)\|(B)...(E)'". Doesn't mean that it isn't useful :P
 
 
 _punch_: still a work in progress
