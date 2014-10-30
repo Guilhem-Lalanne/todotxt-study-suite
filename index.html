@@ -124,34 +124,36 @@
 
 
       divs = [];
-      /*todotxt.forEach(function(d) {
-        // somewhere in your code, preferably outside of global scope
-        var div = document.createElement('div');
-        div.className = "item shadow";
+      // todotxt.forEach(function(d) {
+      //   // somewhere in your code, preferably outside of global scope
+      //   var div = document.createElement('div');
+      //   div.className = "item shadow";
 
-        if(d.priority == '(A)') div.className += " todo-pri-a";
-        if(d.priority == '(B)') div.className += " todo-pri-b";
-        if(d.priority == '(C)') div.className += " todo-pri-c";
-        if(d.priority == '(D)') div.className += " todo-pri-d";
-        if(d.priority == '(E)') div.className += " todo-pri-e";
+      //   if(d.priority == '(A)') div.className += " todo-pri-a";
+      //   if(d.priority == '(B)') div.className += " todo-pri-b";
+      //   if(d.priority == '(C)') div.className += " todo-pri-c";
+      //   if(d.priority == '(D)') div.className += " todo-pri-d";
+      //   if(d.priority == '(E)') div.className += " todo-pri-e";
 
-        // assuming elements contains string of html with your elements
-        text = [
-          // "<div class="headline">+project</div>",
-          '<div class="todo">' + d.text + '</div>',
-        ].join('\n');
-        container.appendChild(div);
-        div.innerHTML = text;
+      //   // assuming elements contains string of html with your elements
+      //   text = [
+      //     // "<div class="headline">+project</div>",
+      //     '<div class="todo">' + d.text + '</div>',
+      //     '<div class="footer"></div>',
+      //   ].join('\n');
+      //   container.appendChild(div);
+      //   div.innerHTML = text;
 
-        divs.push(div);
-      });*/
+      //   divs.push(div);
+      // });
+
       aggregator = function(c) {
         var div = document.createElement('div');
-        div.className = "item shadow";
+        div.className = "item shadow " + current_color;
         text = ['<div class="headline">' + c + '</div>'];
 
         todotxt.forEach(function(t) {
-          if(t.context == c) {
+          if(t[current_aggregate] == c) {
             text.push('<div class="todo">' + t.text + '</div>')
           }
         });
@@ -162,9 +164,14 @@
         div.innerHTML = text;
         divs.unshift(div);
       }
-      
+
+      current_aggregate = 'context';
+      current_color = 'notecard-yellow';
       contexts.forEach(aggregator);
+      current_aggregate = 'project';
+      current_color = 'notecard-blue';
       projects.forEach(aggregator);
+
 
       msnry.appended(divs);
       msnry.layout();

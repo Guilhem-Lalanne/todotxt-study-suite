@@ -33,14 +33,17 @@ body {
   margin-top: 10px;
   margin-bottom: 10px;
   background-color: rgb(255, 255, 255);
+  /*background-color: tomato;*/
   
   /*border: solid transparent;
   border-width: 1px 1px 1px 1px;*/
   /*background-clip: padding-box;*/
 }
 
-.notecard-yellow { background-color: yellow; }
-.notecard-red { background-color: red; }
+.notecard-yellow  { background-color: #F1F14E; }
+.notecard-red     { background-color: #F7846A; }
+.notecard-blue    { background-color: #85D6E4; }
+.notecard-green   { background-color: #C9EA5D; }
 
 
 .headline {
