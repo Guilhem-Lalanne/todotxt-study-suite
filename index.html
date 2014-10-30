@@ -1,78 +1,234 @@
 <!doctype html>
 <html>
 <head>
-    <title></title>
-    <script src="https://www.dropbox.com/static/api/dropbox-datastores-1.0-latest.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="xac2gaynjb1rok8"></script>
-    <script src="/js/masonry.pkgd.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+  <title></title>
+  <script src="https://www.dropbox.com/static/api/dropbox-datastores-1.0-latest.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="xac2gaynjb1rok8"></script>
+  <script src="/js/masonry.pkgd.min.js"></script>
+
+  <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <center id="topbar">
-        <button id="writeButton" class="dropbox-dropin-btn">
-            <span class="dropin-btn-status"></span>Update in Dropbox</button>
-    </center>
 
-    <div id="container">
-    </div>
+  <center id="topbar" class="shadow">
+    <button id="writeButton" class="dropbox-dropin-btn">
+      <span class="dropin-btn-status"></span>Update in Dropbox</button>
+  </center>
 
-    <script>
-        // DROPBOX 
-        var client = new Dropbox.Client({ key: 'xac2gaynjb1rok8' });
-        var button = Dropbox.createChooseButton({
-            success : function(files) {
-                console.log(files[0].name);
-                console.log(files[0].bytes);
-                console.log(files[0].link);
+  <div id="container">
+  </div>
 
-                $.ajax({
-                  url: files[0].link,
-                  success: function(data) {
-                    console.log(data);
-                  },
-                });
-            },
+  <script>
+    // DROPBOX 
+    var todotxt;
 
-            cancel  : function() {},
+    var client = new Dropbox.Client({ key: 'xac2gaynjb1rok8' });
+    var button = Dropbox.createChooseButton({
+      success : function(files) {
+        console.log(files[0].name);
+        console.log(files[0].bytes);
+        console.log(files[0].link);
 
-            multiselect : false,
-            extensions  : ['.txt'],
+
+        $.ajax({
+          url: files[0].link,
+          success: function(data) {
+          console.log(data);
+          },
         });
-        document.getElementById("topbar").appendChild(button);
+      },
 
-        // actual function to upload to dropbox
-        function doHelloWorld() {
-            client.writeFile('hello.txt', 'Hello, World!', function (error) {
-                if (error) {
-                    alert('Error: ' + error);
-                } else {
-                    alert('File written successfully!');
-                }
-            });
-        }
+      cancel  : function() {},
 
-        // Try to complete OAuth flow. So you don't aways have to login for me
-        client.authenticate({ interactive: false }, function (error, client) {
-            if (error) {
-                alert('Error: ' + error);
-            }
-        });
+      multiselect : false,
+      extensions  : ['.txt'],
+    });
+    document.getElementById("topbar").appendChild(button);
 
-        if(client.isAuthenticated()) {
-            doHelloWorld();
+    // actual function to upload to dropbox
+    /*function doHelloWorld() {
+      client.writeFile('hello.txt', 'Hello, World!', function (error) {
+        if (error) {
+          alert('Error: ' + error);
         } else {
-            console.log('Not Currently Connected');
+          alert('File written successfully!');
         }
-        document.getElementById('writeButton').onclick = function () {
-            client.authenticate(function (error, client) {
-                if (error) {
-                    alert('Error: ' + error);
-                } else {
-                    doHelloWorld();
-                }
-            });
+      });
+    }*/
+
+
+    
+
+    document.getElementById('writeButton').onclick = function () {
+      client.authenticate(function (error, client) {
+        if (error) {
+          alert('Error: ' + error);
+        } else {
         }
-    </script>
+      });
+    }
+
+    // Try to complete OAuth flow. So you don't aways have to login for me
+    client.authenticate({ interactive: true }, function (error, client) {
+      if(error) {
+        alert('Error: ' + error);
+      }
+
+      if(client.isAuthenticated()) {
+        // doHelloWorld();
+        client.readFile('.todo/todo.txt', function(error, data, stats) {
+          if(error) {
+            // case Dropbox.ApiError.NOT_FOUND:
+            console.log(error.status);
+          } else {
+            load_todotxt(data);
+          }
+        });
+
+
+      } else {
+        console.log('Not Currently Connected');
+      }
+    });
+
+    function load_todotxt(data) {
+      var container = document.getElementById("container");
+      data = data.split('\n');
+      
+      // 
+      todotxt = [];
+      contexts = [];
+      projects = [];
+      data.forEach(function(d) {
+        task            = Object();
+        task.priority   = d.match(/\([A-Z]\)/) ? d.match(/\([A-Z]\)/)[0].trim() : null;
+        task.due        = d.match(/d:\d\d\d\d-\d\d\-\d\d/) ? d.match(/d:\d\d\d\d-\d\d\-\d\d/)[0].trim() : null;
+        task.threadhold = d.match(/t:\d\d\d\d-\d\d\-\d\d/) ? d.match(/t:\d\d\d\d-\d\d\-\d\d/)[0].trim() : null;
+        task.context    = d.match(/@\w+/) ? d.match(/@\w+/)[0].trim() : null;
+        task.project    = d.match(/\+\w+/) ? d.match(/\+\w+/)[0].trim() : null;
+        task.text       = d.replace(/\([A-Z]\)/, '')
+                           .replace(/d:\d\d\d\d-\d\d\-\d\d/, '')
+                           .replace(/t:\d\d\d\d-\d\d\-\d\d/, '') 
+                           .replace(/\+\w+/, '')
+                           .replace(/@\w+/, '')
+                           .trim();
+        
+        if(task.context != null && contexts.indexOf(task.context) == -1) contexts.push(task.context);
+        if(task.project != null && projects.indexOf(task.project) == -1) projects.push(task.project);
+
+        todotxt.push(task);
+      })
+
+
+      divs = [];
+      /*todotxt.forEach(function(d) {
+        // somewhere in your code, preferably outside of global scope
+        var div = document.createElement('div');
+        div.className = "item shadow";
+
+        if(d.priority == '(A)') div.className += " todo-pri-a";
+        if(d.priority == '(B)') div.className += " todo-pri-b";
+        if(d.priority == '(C)') div.className += " todo-pri-c";
+        if(d.priority == '(D)') div.className += " todo-pri-d";
+        if(d.priority == '(E)') div.className += " todo-pri-e";
+
+        // assuming elements contains string of html with your elements
+        text = [
+          // "<div class="headline">+project</div>",
+          '<div class="todo">' + d.text + '</div>',
+        ].join('\n');
+        container.appendChild(div);
+        div.innerHTML = text;
+
+        divs.push(div);
+      });*/
+      aggregator = function(c) {
+        var div = document.createElement('div');
+        div.className = "item shadow";
+        text = ['<div class="headline">' + c + '</div>'];
+
+        todotxt.forEach(function(t) {
+          if(t.context == c) {
+            text.push('<div class="todo">' + t.text + '</div>')
+          }
+        });
+        text.push('<div class="footer"></div>');
+        text = text.join('\n');
+        
+        container.appendChild(div);
+        div.innerHTML = text;
+        divs.unshift(div);
+      }
+      
+      contexts.forEach(aggregator);
+      projects.forEach(aggregator);
+
+      msnry.appended(divs);
+      msnry.layout();
+    }
+
+    var container = document.querySelector('#container');
+    var msnry = new Masonry(container, {
+      // options
+      columnWidth: 300,
+      itemSelector: '.item',
+
+      gutter: 10,
+      isFitWidth: true,
+    });
+
+
+
+
+
+
+    // var pushTodoTxtFile = function(data){
+    //   var callback = arguments[1] ? arguments[1] : undefined;
+      
+    //   client.writeFile(lsVars["todoFileLocation"], data, function(error, stats) {
+    //   if (error) {
+    //     console.log(error.status);
+    //     return showError(error);  // Something went wrong.
+    //   }
+    //   // If remote file updated successfully, mark all 'local'-labeled changes as 'synced' and store new revision number to LS
+    //   markAllTodoSynced(false, function(){
+    //     refreshListView();
+    //     setOfflineStatus(false);
+    //     callback();
+    //   });
+      
+    //   lsSet({
+    //     "revision": stats.versionTag,
+    //     "fileChanged": false
+    //   });
+    //   });
+    // };
+
+
+    // var getTodoTxtFile = function(replaceAll, callback){
+    //   // Get contents of todo.txt
+    //   client.readFile(lsVars["todoFileLocation"], function(error, data, stats) {
+    //   if (error) {
+    //     // case Dropbox.ApiError.NOT_FOUND:
+    //     console.log(error.status);
+    //     return showError(error);  // Something went wrong.
+    //   }
+      
+    //   saveTodoTxtFileToLS(data, replaceAll, function(){
+    //     lsSet({"revision":  stats.versionTag}, function(){
+    //     callback();
+    //     });
+    //   });
+    //   });
+    // }
+  </script>
+
+
+
+
+  <sc
 </body>
 </html>
