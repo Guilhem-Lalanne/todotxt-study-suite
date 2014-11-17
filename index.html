@@ -98,7 +98,6 @@
       var container = document.getElementById("container");
       data = data.split('\n');
       
-      // 
       todotxt = [];
       contexts = [];
       projects = [];
@@ -124,28 +123,32 @@
 
 
       divs = [];
-      // todotxt.forEach(function(d) {
-      //   // somewhere in your code, preferably outside of global scope
-      //   var div = document.createElement('div');
-      //   div.className = "item shadow";
+      todotxt.forEach(function(d) {
+        // somewhere in your code, preferably outside of global scope
+        var div = document.createElement('div');
+        div.className = "item shadow";
 
-      //   if(d.priority == '(A)') div.className += " todo-pri-a";
-      //   if(d.priority == '(B)') div.className += " todo-pri-b";
-      //   if(d.priority == '(C)') div.className += " todo-pri-c";
-      //   if(d.priority == '(D)') div.className += " todo-pri-d";
-      //   if(d.priority == '(E)') div.className += " todo-pri-e";
+        if(d.priority == '(A)') div.className += " todo-pri-a";
+        if(d.priority == '(B)') div.className += " todo-pri-b";
+        if(d.priority == '(C)') div.className += " todo-pri-c";
+        if(d.priority == '(D)') div.className += " todo-pri-d";
+        if(d.priority == '(E)') div.className += " todo-pri-e";
 
-      //   // assuming elements contains string of html with your elements
-      //   text = [
-      //     // "<div class="headline">+project</div>",
-      //     '<div class="todo">' + d.text + '</div>',
-      //     '<div class="footer"></div>',
-      //   ].join('\n');
-      //   container.appendChild(div);
-      //   div.innerHTML = text;
+        // assuming elements contains string of html with your elements
+        text = [
+          '<div class="todo">' + d.text,
+          '</div>',
+          '<div class="footer"></div>',
+        ].join('\n');
+        
+        if(d.context == null && d.project == null) {
+          container.appendChild(div);
+          div.innerHTML = text;
+          divs.push(div);
+        }
+      });
 
-      //   divs.push(div);
-      // });
+      console.log(todotxt);
 
       aggregator = function(c) {
         var div = document.createElement('div');
@@ -154,7 +157,12 @@
 
         todotxt.forEach(function(t) {
           if(t[current_aggregate] == c) {
-            text.push('<div class="todo">' + t.text + '</div>')
+            var todo = ['<div class="todo">',
+            '<div>' + t.text + '</div>',
+            '<div class="overlay"><div class="xlose" onclick="">x</div></div>', 
+            '</div>',
+            ].join('\n'); 
+            text.push(todo);
           }
         });
         text.push('<div class="footer"></div>');
@@ -162,7 +170,7 @@
         
         container.appendChild(div);
         div.innerHTML = text;
-        divs.unshift(div);
+        divs.push(div);
       }
 
       current_aggregate = 'context';
@@ -186,6 +194,7 @@
       gutter: 10,
       isFitWidth: true,
     });
+
 
 
 

@@ -9,8 +9,8 @@ class bcolors:
     ENDC = '\033[0m'
 
 HIGHLIGHTS = (('(A)', bcolors.WARNING),
-			  ('(B)', bcolors.OKBLUE),
-			  ('(C)', bcolors.OKGREEN),
+			  ('(B)', bcolors.OKGREEN),
+			  ('(C)', bcolors.OKBLUE),
 			  ('(D)', bcolors.HEADER))
 COLUMN_W = 40
 TERM_W = int(os.popen('stty size', 'r').read().split()[1])
