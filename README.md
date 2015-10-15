@@ -29,8 +29,9 @@ TODO: 60 added.
 </pre>
 
 
-_lsgroup_: Prints in columns organized by either context or group
+_lsgroup_: 
 =====
+# Prints in columns organized by either context or group
 
 To print your todo.txt by context.
 
@@ -63,14 +64,16 @@ this guy
 this guy   
 </pre>
 
-_lsp_: Prints out all your top priorit tasks from (A)...(E) 
+_lsp_:  
 =====
+# Prints out all your top priorit tasks from (A)...(E)
 
 Ok, this is actually really just an alias for ls that passes "'(A)\|(B)...(E)'". Doesn't mean that it isn't useful :P
 
 
-_watch_: Watches your todo text and syncs with google drive with [https://github.com/odeke-em/drive](this client written in Go.)
+_watch_: 
 =====
+# Watches your todo text and syncs with google drive with [https://github.com/odeke-em/drive](this client written in Go.)
 
 Executes todo,sh lsgp for you while with color on file changes. Also runs `drive pull` and `drive push`.
 
