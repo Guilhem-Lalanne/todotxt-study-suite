@@ -1,18 +1,19 @@
 import sys, os, re, subprocess
 
 class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
+	HEADER = '\033[95m'
+	OKBLUE = '\033[94m'
+	OKGREEN = '\033[92m'
+	WARNING = '\033[93m'
+	FAIL = '\033[91m'
+	ENDC = '\033[0m'
 
 HIGHLIGHTS = (('(A)', bcolors.WARNING),
 			  ('(B)', bcolors.OKGREEN),
 			  ('(C)', bcolors.OKBLUE),
 			  ('(D)', bcolors.HEADER))
 COLUMN_W = 40
+SPLIT_COLUMNS = True
 TERM_W = int(os.popen('stty size', 'r').read().split()[1])
 TODOSH_DIR = '/home/sachin/.scripts'
 
@@ -51,7 +52,7 @@ def main(argv):
 
 	# rool through list and add projects into array if they're not there
 	for l in lines:
-		for r in re.findall('(' + pre + '[A-Za-z0-9]*)', l):
+		for r in re.findall('(' + pre + '[a-zA-Z0-9~@#$^*()_=[\]{}|\\,.?:-]*)', l):
 			if r not in contexts:
 				contexts.append(r)
 				context_lines.append([])
@@ -60,7 +61,7 @@ def main(argv):
 	context_lengths = sorted([len(c) for c in context_lines])
 	
 	# balance the context list if context is 2x as big as next one
-	if context_lengths[-1] * 2 > context_lengths[-2]:
+	if SPLIT_COLUMNS and (context_lengths[-1] * 2 > context_lengths[-2]):
 		# find the index of biggest
 		# you don't need next here because you know that you're gonna get something
 		biggest = [i for i in range(len(context_lines)) 
@@ -108,6 +109,7 @@ def main(argv):
 						text = context_lines[i][count]
 						text = text.replace(contexts[i] + ' ', '')
 					
+					text = text.decode('utf-8')
 					text = text[:COLUMN_W]
 					text = text.ljust(COLUMN_W)
 					
@@ -125,4 +127,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+	main(sys.argv[1:])
