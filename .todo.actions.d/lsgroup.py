@@ -1,4 +1,14 @@
+#!/usr/bin/env python2.7
 import sys, os, re, subprocess
+
+""" TODO.TXT Group VIew
+USAGE:  
+	t lsgp -- view by project
+	t lspc -- view by context
+
+	
+
+"""
 
 class bcolors:
     HEADER = '\033[95m'
@@ -8,13 +18,13 @@ class bcolors:
     FAIL = '\033[91m'
     ENDC = '\033[0m'
 
-HIGHLIGHTS = (('(A)', bcolors.WARNING),
+HIGHLIGHTS = (('(A)', bcolors.OKBLUE),
 			  ('(B)', bcolors.OKGREEN),
-			  ('(C)', bcolors.OKBLUE),
+                          ('(C)', bcolors.WARNING),
 			  ('(D)', bcolors.HEADER))
 COLUMN_W = 40
 TERM_W = int(os.popen('stty size', 'r').read().split()[1])
-TODOSH_DIR = '/home/sachin/.scripts'
+TODOSH_DIR = '/home/sachin/bin'
 
 
 def main(argv):
@@ -24,11 +34,11 @@ def main(argv):
 	if len(argv) < 2:
 		print 'ERROR'
 		exit()
+
 	# contexts or projects
 	pre = '\+' if '-p' in argv else '@'
 
-
-		# this ignores final filter and stuff
+	# this ignores final filter and stuff
 	"""
 	with open(argv[0], "r") as f:
 		lines = f.readlines()
@@ -39,8 +49,10 @@ def main(argv):
 
 	# filter for only the actual lines
 	# get no colors because strings are weird
-	lines = [l for l in subprocess.check_output(['./todo.sh', '-p', 'ls'], cwd=TODOSH_DIR).split('\n') 
-			if len(re.findall('^\d+', l)) > 0]
+	# lines = [l for l in subprocess.check_output(['./todo.sh', '-p', 'ls'], cwd=TODOSH_DIR).split('\n') 
+			# if len(re.findall('^\d+', l)) > 0]
+	lines = subprocess.check_output(['./todo.sh', '-p', 'ls'], cwd=TODOSH_DIR).split('\n')
+	lines = lines[:len(lines) - 3] # get rid of the last unnecessary lines
 	
 	# numbers from start to end so you can sort later on
 	for i in range(len(lines)):
@@ -48,14 +60,21 @@ def main(argv):
 		lines[i] = re.sub('^\d+', '', lines[i])
 		lines[i] = lines[i] + ' ' + num
 
-
-	# rool through list and add projects into array if they're not there
+	# roll through list and add projects into array if they're not there
 	for l in lines:
 		for r in re.findall('(' + pre + '[A-Za-z0-9]*)', l):
 			if r not in contexts:
 				contexts.append(r)
 				context_lines.append([])
 			context_lines[contexts.index(r)].append(l.strip())
+
+	# finally add in all the untagged ones
+	# contexts.append('')
+	# context_lines.append([])
+	# for l in lines:
+	# 	if len(re.findall('(' + pre + '[A-Za-z0-9]*)', l)) == 0:
+	# 		context_lines[-1].append(l.strip())
+
 	
 	context_lengths = sorted([len(c) for c in context_lines])
 	
