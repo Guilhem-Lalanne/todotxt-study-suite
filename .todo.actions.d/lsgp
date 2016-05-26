@@ -13,5 +13,5 @@ shift
 }
 
 [ "$action" = "lsgp" ] && {
-    python2 ${TODO_ACTIONS_DIR}/lsgroup.py "$TODO_FILE" -p
+    ${TODO_ACTIONS_DIR}/lsgroup.py "$TODO_FILE" -p
 }
