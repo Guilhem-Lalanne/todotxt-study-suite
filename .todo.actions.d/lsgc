@@ -13,12 +13,11 @@ shift
 }
 
 [ "$action" = "lsgc" ] && {
-    # python ${TODO_ACTIONS_DIR}/lsgroup.py "$TODO_FILE" -c
     # python "`cygpath -w ${TODO_ACTIONS_DIR}/birdseye.py`" "$TODO_FILE" "$DONE_FILE"   
     # python "`cygpath -w ${TODO_ACTIONS_DIR}/birdseye.py`" "`cygpath -w $TODO_FILE`" "`cygpath -w $DONE_FILE`"   
     
 	if [ $# -eq 0 ] ; then
-	    python2.7 ${TODO_ACTIONS_DIR}/lsgroup.py "$TODO_FILE" -c
+	    ${TODO_ACTIONS_DIR}/lsgroup.py "$TODO_FILE" -c
 	else
 	    echo $1
 	    ${TODO_ACTIONS_DIR}/lsgroup.py "$1" -c
