@@ -25,7 +25,7 @@ HIGHLIGHTS = (('(A)', bcolors.OKBLUE),
 COLUMN_W = 40
 SPLIT_COLUMNS = True
 TERM_W = int(os.popen('stty size', 'r').read().split()[1])
-TODOSH_DIR = '~/dotfiles/todo/todo.txt-cli'
+TODOSH_DIR = os.path.expanduser("~") + '/dotfiles/todo/todo.txt-cli/'
 
 def main(argv):
 	contexts = []
