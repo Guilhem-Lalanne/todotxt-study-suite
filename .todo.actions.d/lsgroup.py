@@ -2,20 +2,20 @@
 import sys, os, re, subprocess
 
 """ TODO.TXT Group VIew
-USAGE:  
+USAGE:
 	t lsgp -- view by project
 	t lspc -- view by context
 
-	
+
 
 """
 
 class bcolors:
-	HEADER = '\033[95m'
-	OKBLUE = '\033[94m'
-	OKGREEN = '\033[92m'
-	WARNING = '\033[93m'
-	FAIL = '\033[91m'
+	HEADER = '\033[0;31m'
+	OKBLUE = '\033[0;34m'
+	OKGREEN = '\033[0;32m'
+	WARNING = '\033[0;33m'
+	FAIL = '\033[0;31m'
 	ENDC = '\033[0m'
 
 HIGHLIGHTS = (('(A)', bcolors.OKBLUE),
@@ -49,11 +49,11 @@ def main(argv):
 
 	# filter for only the actual lines
 	# get no colors because strings are weird
-	# lines = [l for l in subprocess.check_output(['./todo.sh', '-p', 'ls'], cwd=TODOSH_DIR).split('\n') 
+	# lines = [l for l in subprocess.check_output(['./todo.sh', '-p', 'ls'], cwd=TODOSH_DIR).split('\n')
 			# if len(re.findall('^\d+', l)) > 0]
 	lines = subprocess.check_output(['./todo.sh', '-p', 'ls'], cwd=TODOSH_DIR).split('\n')
 	lines = lines[:len(lines) - 3] # get rid of the last unnecessary lines
-	
+
 	# numbers from start to end so you can sort later on
 	for i in range(len(lines)):
 		num = re.findall('^\d+', lines[i])[0]
@@ -75,14 +75,14 @@ def main(argv):
 	# 	if len(re.findall('(' + pre + '[A-Za-z0-9]*)', l)) == 0:
 	# 		context_lines[-1].append(l.strip())
 
-	
+
 	context_lengths = sorted([len(c) for c in context_lines])
-	
+
 	# balance the context list if context is 2x as big as next one
 	if SPLIT_COLUMNS and (context_lengths[-1] * 2 > context_lengths[-2]):
 		# find the index of biggest
 		# you don't need next here because you know that you're gonna get something
-		biggest = [i for i in range(len(context_lines)) 
+		biggest = [i for i in range(len(context_lines))
 				if len(context_lines[i]) == context_lengths[-1]][0]
 
 		chunk1 = context_lines[biggest][:int(context_lengths[-1] / 2)]
@@ -126,11 +126,11 @@ def main(argv):
 						empty = False
 						text = context_lines[i][count]
 						text = text.replace(contexts[i] + ' ', '')
-					
+
 					text = text.decode('utf-8')
 					text = text[:COLUMN_W]
 					text = text.ljust(COLUMN_W)
-					
+
 					for h in HIGHLIGHTS:
 						text = text.replace(h[0], h[0] + h[1])
 					print text + bcolors.ENDC,
