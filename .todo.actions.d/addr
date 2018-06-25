@@ -27,7 +27,7 @@ echo "Appending:" $(sed $lastadded"q;d" "$TODO_FILE" | grep -o "$REGEX")
 
 # add contexts and projects
 sed $lastadded"q;d" "$TODO_FILE" | grep -o "$REGEX" | while read -r app
-do 
+do
     "$TODO_FULL_SH" command append "$newest" "$app"
 done
 
