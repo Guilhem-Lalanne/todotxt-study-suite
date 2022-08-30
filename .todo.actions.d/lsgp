@@ -12,6 +12,46 @@ shift
   exit
 }
 
+# TODO: export colors to python script
+# https://stackoverflow.com/questions/33829444/passing-bash-array-to-python-list
+
+# Import default color map
+COLOR_MAP=(
+  ${!NONE@}=$NONE
+  ${!BLACK@}=$BLACK
+  ${!RED@}=$RED
+  ${!GREEN@}=$GREEN
+  ${!BROWN@}=$BROWN
+  ${!BLUE@}=$BLUE
+  ${!PURPLE@}=$PURPLE
+  ${!CYAN@}=$CYAN
+  ${!LIGHT_GREY@}=$LIGHT_GREY
+  ${!DARK_GREY@}=$DARK_GREY
+  ${!LIGHT_RED@}=$LIGHT_RED
+  ${!LIGHT_GREEN@}=$LIGHT_GREEN
+  ${!YELLOW@}=$YELLOW
+  ${!LIGHT_BLUE@}=$LIGHT_BLUE
+  ${!LIGHT_PURPLE@}=$LIGHT_PURPLE
+  ${!LIGHT_CYAN@}=$LIGHT_CYAN
+  ${!WHITE@}=$WHITE
+  ${!DEFAULT@}=$DEFAULT)
+
+# Default priority->color map.
+# export PRI_A=$YELLOW        # color for A priority
+# export PRI_B=$GREEN         # color for B priority
+# export PRI_C=$LIGHT_BLUE    # color for C priority
+# export PRI_X=$WHITE         # color unless explicitly defined
+
+# Default project, context, date, item number, and metadata key:value pairs colors.
+# export COLOR_PROJECT=$NONE
+# export COLOR_CONTEXT=$NONE
+# export COLOR_DATE=$NONE
+# export COLOR_NUMBER=$NONE
+# export COLOR_META=$NONE
+
+# Default highlight colors.
+# export COLOR_DONE=$LIGHT_GREY   # color for done (but not yet archived) tasks
+
 [ "$action" = "lsgp" ] && {
-    python2.7 ${TODO_ACTIONS_DIR}/lsgroup/lsgroup.py "$TODO_FILE" -p
+  python ${TODO_ACTIONS_DIR}/lsgroup.py "$TODO_FILE" -p ${COLOR_MAP[@]}
 }

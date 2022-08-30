@@ -34,6 +34,7 @@ logging.info(f'Terminal width is {TERM_W}')
 TODOSH_DIR = '/usr/local/bin' # TODO: change to argument
 
 def main(argv):
+    logging.error(argv)
     contexts = []
     context_lines = []
 
