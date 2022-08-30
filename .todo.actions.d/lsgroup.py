@@ -26,10 +26,10 @@ HIGHLIGHTS = (
     ('(C)', bcolors.WARNING),
     ('(D)', bcolors.HEADER))
 COLUMN_W = 40
-SPLIT_COLUMNS = True
+SPLIT_COLUMNS = True # TODO: change to argument
 TERM_W = int(os.popen('stty size', 'r').read().split()[1])
 logging.info(f'Terminal width is {TERM_W}')
-TODOSH_DIR = os.path.expanduser("~") + '/Dotfiles/todo/todo.txt-cli/'
+TODOSH_DIR = '/usr/local/bin' # TODO: change to argument
 
 def main(argv):
     contexts = []
@@ -90,6 +90,7 @@ def main(argv):
     logging.info('----------------------')
 
     # balance the context list if context is 2x as big as next one
+    # TODO /!\ DOES NOT WORK FOR SMALL NUMBER OF PROJECTS (ITEMS <= 1) ?
     if SPLIT_COLUMNS and (context_lengths[-1] * 2 > context_lengths[-2]):
         # find the index of biggest
         # you don't need next here because you know that you're gonna get something
