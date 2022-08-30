@@ -25,6 +25,8 @@ HIGHLIGHTS = (
     ('(B)', bcolors.OKGREEN),
     ('(C)', bcolors.WARNING),
     ('(D)', bcolors.HEADER))
+# TODO: use colors from todo.sh script or config file ?
+
 COLUMN_W = 40
 SPLIT_COLUMNS = True # TODO: change to argument
 TERM_W = int(os.popen('stty size', 'r').read().split()[1])
