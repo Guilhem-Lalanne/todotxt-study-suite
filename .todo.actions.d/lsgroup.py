@@ -1,14 +1,16 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
+
 import sys, os, re, subprocess
+import logging
 
 """ TODO.TXT Group VIew
 USAGE:
     t lsgp -- view by project
     t lspc -- view by context
 
-
-
 """
+
+logging.basicConfig(level=logging.ERROR)
 
 class bcolors:
     HEADER = '\033[0;37m'
@@ -26,6 +28,7 @@ HIGHLIGHTS = (
 COLUMN_W = 40
 SPLIT_COLUMNS = True
 TERM_W = int(os.popen('stty size', 'r').read().split()[1])
+logging.info(f'Terminal width is {TERM_W}')
 TODOSH_DIR = os.path.expanduser("~") + '/Dotfiles/todo/todo.txt-cli/'
 
 def main(argv):
@@ -33,7 +36,7 @@ def main(argv):
     context_lines = []
 
     if len(argv) < 2:
-        print 'ERROR'
+        logging.error('ERROR: Missing arguments')
         exit()
 
     # contexts or projects
@@ -54,6 +57,8 @@ def main(argv):
             # if len(re.findall('^\d+', l)) > 0]
     lines = subprocess.check_output(['./todo.sh', '-p', 'ls'], cwd=TODOSH_DIR).split('\n')
     lines = lines[:len(lines) - 3] # get rid of the last unnecessary lines
+    logging.info(f'{lines}')
+    logging.info('----------------------')
 
     # numbers from start to end so you can sort later on
     for i in range(len(lines)):
@@ -69,6 +74,9 @@ def main(argv):
                 context_lines.append([])
             context_lines[contexts.index(r)].append(l.strip())
 
+    logging.info(context_lines)
+    logging.info('----------------------')
+
     # finally add in all the untagged ones
     # contexts.append('')
     # context_lines.append([])
@@ -78,6 +86,8 @@ def main(argv):
 
 
     context_lengths = sorted([len(c) for c in context_lines])
+    logging.info(context_lengths)
+    logging.info('----------------------')
 
     # balance the context list if context is 2x as big as next one
     if SPLIT_COLUMNS and (context_lengths[-1] * 2 > context_lengths[-2]):
@@ -94,31 +104,46 @@ def main(argv):
 
         # copy biggest over one
         contexts.insert(biggest, contexts[biggest])
-        print 'split %s into 2 sections.' % contexts[biggest]
+        logging.info('split %s into 2 sections.' % contexts[biggest])
+        logging.info('----------------------')
 
     try:
         # sort lines
         for i in range(len(context_lines)):
             context_lines[i] = sorted(context_lines[i])
+            logging.info('Sort context lines ...')
+            logging.info(context_lines[i])
+            logging.info('----------------------')
 
         # move number from end
         for i in range(len(context_lines)):
             for j in range(len(context_lines[i])):
                 context_lines[i][j] = context_lines[i][j].split()[-1] \
                 + ' ' + ' '.join(context_lines[i][j].split()[:-1])
+                logging.info('Sort context lines ...')
+                logging.info(context_lines[i][j])
+                logging.info('TRY 2 ----------------------')
 
         # columns that will fit
+        logging.info('Printing result ...')
         column_offset = 0
         columns = TERM_W / COLUMN_W
+        logging.info(f'Columns = {columns} .................')
         while column_offset + columns < len(context_lines) + columns:
             # titles
+            logging.info('"TITLES"')
+            logging.info(f'column_offset = {column_offset}')
+            logging.info(f'column_offset + columns = {column_offset + columns}')
+            logging.info(f'len(context_lines) = {len(context_lines)}')
+            logging.info(f'min(column_offset + columns, len(context_lines)) = {min(column_offset + columns, len(context_lines))}')
             for i in range(column_offset, min(column_offset + columns, len(context_lines))):
-                print contexts[i][:COLUMN_W].ljust(COLUMN_W),
-            print ''
+                print(contexts[i][:COLUMN_W].ljust(COLUMN_W),end=" ")
+            print('')
 
             count = 0
             empty = False
             while not empty:
+                logging.info('"ROWS IN THE SECTION"')
                 # all the rows in this section
                 empty = True
                 for i in range(column_offset, min(column_offset + columns, len(context_lines))):
@@ -131,17 +156,26 @@ def main(argv):
                     text = text.decode('utf-8')
                     text = text[:COLUMN_W]
                     text = text.ljust(COLUMN_W)
+                    logging.info(f'text is of type {type(text)}')
+                    logging.info(text)
+                    logging.info('----------------------')
 
+                    logging.info(HIGHLIGHTS)
                     for h in HIGHLIGHTS:
+                        logging.info(f'h is of type {type(h)}')
+                        logging.info(f'h = {h}')
+                        logging.info(f'h([0] is of type {type(h[0])}')
+                        logging.info(f'h[0] = {h[0]}')
                         text = text.replace(h[0], h[0] + h[1])
-                    print text + bcolors.ENDC,
+                    text = text + bcolors.ENDC
+                    print(f'{text}',end=" ")
 
                 count += 1
-                print ''
+                print('')
 
             column_offset += columns
     except:
-        print 'ERROR'
+        logging.error('ERROR')
         exit()
 
 
