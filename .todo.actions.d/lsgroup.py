@@ -55,7 +55,7 @@ def main(argv):
     # get no colors because strings are weird
     # lines = [l for l in subprocess.check_output(['./todo.sh', '-p', 'ls'], cwd=TODOSH_DIR).split('\n')
             # if len(re.findall('^\d+', l)) > 0]
-    lines = subprocess.check_output(['./todo.sh', '-p', 'ls'], cwd=TODOSH_DIR).split('\n')
+    lines = subprocess.check_output(['./todo.sh', '-p', 'ls'], cwd=TODOSH_DIR, text=True).split('\n')
     lines = lines[:len(lines) - 3] # get rid of the last unnecessary lines
     logging.info(f'{lines}')
     logging.info('----------------------')
@@ -154,7 +154,6 @@ def main(argv):
                     text = context_lines[i][count]
                     text = text.replace(contexts[i] + ' ', '')
 
-                text = text.decode('utf-8')
                 text = text[:COLUMN_W]
                 text = text.ljust(COLUMN_W)
                 logging.info(f'text is of type {type(text)}')
