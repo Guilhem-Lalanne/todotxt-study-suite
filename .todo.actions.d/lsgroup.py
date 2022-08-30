@@ -137,7 +137,7 @@ def main(argv):
         logging.info(f'column_offset + columns = {column_offset + columns}')
         logging.info(f'len(context_lines) = {len(context_lines)}')
         logging.info(f'min(column_offset + columns, len(context_lines)) = {min(column_offset + columns, len(context_lines))}')
-        for i in range(column_offset, min(column_offset + columns, len(context_lines))):
+        for i in range(int(column_offset), int(min(column_offset + columns, len(context_lines)))):
             print(contexts[i][:COLUMN_W].ljust(COLUMN_W),end=" ")
         print('')
 
@@ -147,7 +147,7 @@ def main(argv):
             logging.info('"ROWS IN THE SECTION"')
             # all the rows in this section
             empty = True
-            for i in range(column_offset, min(column_offset + columns, len(context_lines))):
+            for i in range(int(column_offset), int(min(column_offset + columns, len(context_lines)))):
                 text = ''
                 if count < len(context_lines[i]):
                     empty = False
