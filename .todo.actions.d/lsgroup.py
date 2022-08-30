@@ -108,76 +108,76 @@ def main(argv):
         logging.info('split %s into 2 sections.' % contexts[biggest])
         logging.info('----------------------')
 
-    try:
-        # sort lines
-        for i in range(len(context_lines)):
-            context_lines[i] = sorted(context_lines[i])
+    #try:
+    # sort lines
+    for i in range(len(context_lines)):
+        context_lines[i] = sorted(context_lines[i])
+        logging.info('Sort context lines ...')
+        logging.info(context_lines[i])
+        logging.info('----------------------')
+
+    # move number from end
+    for i in range(len(context_lines)):
+        for j in range(len(context_lines[i])):
+            context_lines[i][j] = context_lines[i][j].split()[-1] \
+            + ' ' + ' '.join(context_lines[i][j].split()[:-1])
             logging.info('Sort context lines ...')
-            logging.info(context_lines[i])
-            logging.info('----------------------')
+            logging.info(context_lines[i][j])
+            logging.info('TRY 2 ----------------------')
 
-        # move number from end
-        for i in range(len(context_lines)):
-            for j in range(len(context_lines[i])):
-                context_lines[i][j] = context_lines[i][j].split()[-1] \
-                + ' ' + ' '.join(context_lines[i][j].split()[:-1])
-                logging.info('Sort context lines ...')
-                logging.info(context_lines[i][j])
-                logging.info('TRY 2 ----------------------')
+    # columns that will fit
+    logging.info('Printing result ...')
+    column_offset = 0
+    columns = TERM_W / COLUMN_W
+    logging.info(f'Columns = {columns} .................')
+    while column_offset + columns < len(context_lines) + columns:
+        # titles
+        logging.info('"TITLES"')
+        logging.info(f'column_offset = {column_offset}')
+        logging.info(f'column_offset + columns = {column_offset + columns}')
+        logging.info(f'len(context_lines) = {len(context_lines)}')
+        logging.info(f'min(column_offset + columns, len(context_lines)) = {min(column_offset + columns, len(context_lines))}')
+        for i in range(column_offset, min(column_offset + columns, len(context_lines))):
+            print(contexts[i][:COLUMN_W].ljust(COLUMN_W),end=" ")
+        print('')
 
-        # columns that will fit
-        logging.info('Printing result ...')
-        column_offset = 0
-        columns = TERM_W / COLUMN_W
-        logging.info(f'Columns = {columns} .................')
-        while column_offset + columns < len(context_lines) + columns:
-            # titles
-            logging.info('"TITLES"')
-            logging.info(f'column_offset = {column_offset}')
-            logging.info(f'column_offset + columns = {column_offset + columns}')
-            logging.info(f'len(context_lines) = {len(context_lines)}')
-            logging.info(f'min(column_offset + columns, len(context_lines)) = {min(column_offset + columns, len(context_lines))}')
+        count = 0
+        empty = False
+        while not empty:
+            logging.info('"ROWS IN THE SECTION"')
+            # all the rows in this section
+            empty = True
             for i in range(column_offset, min(column_offset + columns, len(context_lines))):
-                print(contexts[i][:COLUMN_W].ljust(COLUMN_W),end=" ")
+                text = ''
+                if count < len(context_lines[i]):
+                    empty = False
+                    text = context_lines[i][count]
+                    text = text.replace(contexts[i] + ' ', '')
+
+                text = text.decode('utf-8')
+                text = text[:COLUMN_W]
+                text = text.ljust(COLUMN_W)
+                logging.info(f'text is of type {type(text)}')
+                logging.info(text)
+                logging.info('----------------------')
+
+                logging.info(HIGHLIGHTS)
+                for h in HIGHLIGHTS:
+                    logging.info(f'h is of type {type(h)}')
+                    logging.info(f'h = {h}')
+                    logging.info(f'h([0] is of type {type(h[0])}')
+                    logging.info(f'h[0] = {h[0]}')
+                    text = text.replace(h[0], h[0] + h[1])
+                text = text + bcolors.ENDC
+                print(f'{text}',end=" ")
+
+            count += 1
             print('')
 
-            count = 0
-            empty = False
-            while not empty:
-                logging.info('"ROWS IN THE SECTION"')
-                # all the rows in this section
-                empty = True
-                for i in range(column_offset, min(column_offset + columns, len(context_lines))):
-                    text = ''
-                    if count < len(context_lines[i]):
-                        empty = False
-                        text = context_lines[i][count]
-                        text = text.replace(contexts[i] + ' ', '')
-
-                    text = text.decode('utf-8')
-                    text = text[:COLUMN_W]
-                    text = text.ljust(COLUMN_W)
-                    logging.info(f'text is of type {type(text)}')
-                    logging.info(text)
-                    logging.info('----------------------')
-
-                    logging.info(HIGHLIGHTS)
-                    for h in HIGHLIGHTS:
-                        logging.info(f'h is of type {type(h)}')
-                        logging.info(f'h = {h}')
-                        logging.info(f'h([0] is of type {type(h[0])}')
-                        logging.info(f'h[0] = {h[0]}')
-                        text = text.replace(h[0], h[0] + h[1])
-                    text = text + bcolors.ENDC
-                    print(f'{text}',end=" ")
-
-                count += 1
-                print('')
-
-            column_offset += columns
-    except:
-        logging.error('ERROR')
-        exit()
+        column_offset += columns
+    #except:
+        # logging.error('ERROR')
+        # exit()
 
 
 if __name__ == "__main__":
